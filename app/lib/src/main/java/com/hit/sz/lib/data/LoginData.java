@@ -3,6 +3,7 @@ package com.hit.sz.lib.data;
 import java.io.Serializable;
 
 public class LoginData extends DataPackage implements Serializable {
+    private static final long serialVersionUID = 529201591143307494L;
     private String name;
     private String pwd;
 

@@ -3,8 +3,10 @@ package com.hit.sz.lib.data;
 import java.io.Serializable;
 
 public abstract class DataPackage implements Serializable {
+    private static final long serialVersionUID = 529201591143307494L;
     protected int type;
-    private static final long serialVersionUID = 1L;
+
+
 
     public DataPackage(int type){
         this.type = type;

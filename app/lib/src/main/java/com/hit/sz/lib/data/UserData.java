@@ -1,21 +1,22 @@
 package com.hit.sz.lib.data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class UserData extends DataPackage{
+public class UserData extends DataPackage implements Serializable {
+    private static final long serialVersionUID = 529201591143307494L;
     private String name;
     private String password;
     private int bonus;
-    private int level;
-    private HashMap<String, Integer> broughtProps;
 
-    public UserData(int type, String name, String password, int bonus, int level) {
+
+    public UserData(int type, String name, String password, int bonus) {
         super(type);
         this.name = name;
         this.password = password;
         this.bonus = bonus;
-        this.level = level;
     }
+
 
     public String getName() {
         return name;
@@ -41,11 +42,5 @@ public class UserData extends DataPackage{
         this.bonus = bonus;
     }
 
-    public int getLevel() {
-        return level;
-    }
 
-    public void setLevel(int level) {
-        this.level = level;
-    }
 }

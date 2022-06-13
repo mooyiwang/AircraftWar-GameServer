@@ -4,7 +4,11 @@ import com.hit.sz.lib.IOStream.MyObjectInputStream;
 import com.hit.sz.lib.data.CheckData;
 import com.hit.sz.lib.data.DataPackage;
 import com.hit.sz.lib.data.LoginData;
+import com.hit.sz.lib.data.NameCheckData;
 import com.hit.sz.lib.data.UserData;
+import com.hit.sz.lib.server.execute.LoginVerify;
+import com.hit.sz.lib.server.execute.NameCheck;
+import com.hit.sz.lib.server.execute.Signup;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +23,12 @@ import java.util.LinkedList;
 public class GameServer {
 
     private LinkedList<UserData> users;
+    public LinkedList<UserData> getUsers() {
+        return users;
+    }
+
+    private int connted_num;
+    private LinkedList<Socket> connted_socket;
 
     public static void main(String args[]){
         new GameServer();
@@ -26,7 +36,9 @@ public class GameServer {
 
     public GameServer(){
         users = new LinkedList<>();
-        users.add(new UserData(3, "www", "1w", 200, 3));
+        users.add(new UserData(3, "www", "1w", 200));
+        connted_num = 0;
+        connted_socket = new LinkedList<>();
         try{
             InetAddress addr = InetAddress.getLocalHost();
             System.out.println("local host:" + addr);
@@ -38,7 +50,9 @@ public class GameServer {
             while(true){
                 System.out.println("waiting client connect");
                 Socket socket = serverSocket.accept();
-                System.out.println("accept client connect" + socket);
+                System.out.println("accept client connect:" + " player"+ connted_num + " socket:" + socket);
+                connted_num++;
+                connted_socket.add(socket);
                 new Thread(new Service(socket)).start();
             }
         }catch (Exception ex){
@@ -70,7 +84,12 @@ public class GameServer {
                     dataPackage = (DataPackage) objIn.readObject();
                     switch (dataPackage.getType()){
                         case 0:
-                            new Thread(new LoginVerify(dataPackage)).start();
+                            new Thread(new LoginVerify(dataPackage, objIn, objOut, users)).start();
+                            break;
+                        case 1:
+                            new Thread(new Signup(dataPackage, objIn, objOut, users)).start();
+                        case 6:
+                            new Thread(new NameCheck(dataPackage, objIn, objOut, users)).start();
                             break;
                     }
                 }
@@ -79,37 +98,8 @@ public class GameServer {
             }
         }
 
-        class LoginVerify extends Thread{
-            private DataPackage dataPackage;
 
-            public LoginVerify(DataPackage data) {
-                this.dataPackage = data;
-            }
 
-            @Override
-            public void run(){
-                LoginData loginData = (LoginData)dataPackage;
-                DataPackage sendData;
-                boolean isSucc = false;
-                for(UserData user:users){
-                    if(user.getName().equals(loginData.getName()) && user.getPassword().equals(loginData.getPwd())){
-                        isSucc = true;
-                        break;
-                    }
-                }
-                if(isSucc){
-                    sendData = new CheckData(2, true);
-                }
-                else{
-                    sendData = new CheckData(2, false);
-                }
-                try {
-                    objOut.writeObject(sendData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
 }
