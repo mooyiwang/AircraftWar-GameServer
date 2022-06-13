@@ -1,18 +1,16 @@
 package com.hit.sz.lib.server;
 
 import com.hit.sz.lib.IOStream.MyObjectInputStream;
-import com.hit.sz.lib.data.CheckData;
 import com.hit.sz.lib.data.DataPackage;
-import com.hit.sz.lib.data.LoginData;
-import com.hit.sz.lib.data.NameCheckData;
 import com.hit.sz.lib.data.UserData;
 import com.hit.sz.lib.server.execute.LoginVerify;
 import com.hit.sz.lib.server.execute.NameCheck;
+import com.hit.sz.lib.server.execute.SendUser;
 import com.hit.sz.lib.server.execute.Signup;
+import com.hit.sz.lib.server.execute.UpdateUser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -88,9 +86,15 @@ public class GameServer {
                             break;
                         case 1:
                             new Thread(new Signup(dataPackage, objIn, objOut, users)).start();
+                            break;
                         case 6:
                             new Thread(new NameCheck(dataPackage, objIn, objOut, users)).start();
                             break;
+                        case 7:
+                            new Thread(new SendUser(dataPackage, objIn, objOut, users)).start();
+                            break;
+                        case 8:
+                            new Thread(new UpdateUser(dataPackage, objIn, objOut, users)).start();
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
