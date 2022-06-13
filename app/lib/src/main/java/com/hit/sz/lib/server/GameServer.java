@@ -5,6 +5,7 @@ import com.hit.sz.lib.data.DataPackage;
 import com.hit.sz.lib.data.UserData;
 import com.hit.sz.lib.server.execute.LoginVerify;
 import com.hit.sz.lib.server.execute.NameCheck;
+import com.hit.sz.lib.server.execute.PlayerMatch;
 import com.hit.sz.lib.server.execute.SendUser;
 import com.hit.sz.lib.server.execute.Signup;
 import com.hit.sz.lib.server.execute.UpdateUser;
@@ -27,6 +28,8 @@ public class GameServer {
 
     private int connted_num;
     private LinkedList<Socket> connted_socket;
+    private LinkedList<Socket> waiting;
+    private LinkedList<Socket> matched;
 
     public static void main(String args[]){
         new GameServer();
@@ -34,9 +37,10 @@ public class GameServer {
 
     public GameServer(){
         users = new LinkedList<>();
-        users.add(new UserData(3, "www", "1w", 200));
+        users.add(new UserData(3, "wwww", "1w", 200));
         connted_num = 0;
         connted_socket = new LinkedList<>();
+        waiting = new LinkedList<>();
         try{
             InetAddress addr = InetAddress.getLocalHost();
             System.out.println("local host:" + addr);
@@ -87,6 +91,8 @@ public class GameServer {
                         case 1:
                             new Thread(new Signup(dataPackage, objIn, objOut, users)).start();
                             break;
+                        case 5:
+                            break;
                         case 6:
                             new Thread(new NameCheck(dataPackage, objIn, objOut, users)).start();
                             break;
@@ -95,13 +101,17 @@ public class GameServer {
                             break;
                         case 8:
                             new Thread(new UpdateUser(dataPackage, objIn, objOut, users)).start();
+                            break;
+                        case 9:
+                            waiting.add(socket);
+                            new Thread(new PlayerMatch(dataPackage, objIn, objOut, waiting));
+                            break;
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
-
 
 
     }
