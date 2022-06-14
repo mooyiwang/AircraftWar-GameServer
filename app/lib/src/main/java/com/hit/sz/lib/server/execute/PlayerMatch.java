@@ -49,7 +49,7 @@ public class PlayerMatch extends Thread{
                 break;
             }
             if(matched.size()==0){
-                matched.add(playerNo);
+                matched.set(0, playerNo);
             }
         }
     }
