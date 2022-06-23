@@ -3,10 +3,12 @@ package com.hit.sz.lib.server;
 import com.hit.sz.lib.IOStream.MyObjectInputStream;
 import com.hit.sz.lib.data.BattleData;
 import com.hit.sz.lib.data.DataPackage;
+import com.hit.sz.lib.data.RecordData;
 import com.hit.sz.lib.data.UserData;
 import com.hit.sz.lib.server.execute.LoginVerify;
 import com.hit.sz.lib.server.execute.NameCheck;
 import com.hit.sz.lib.server.execute.PlayerMatch;
+import com.hit.sz.lib.server.execute.RanklistReturn;
 import com.hit.sz.lib.server.execute.SendUser;
 import com.hit.sz.lib.server.execute.Signup;
 import com.hit.sz.lib.server.execute.UpdateUser;
@@ -22,10 +24,11 @@ import java.util.LinkedList;
 
 public class GameServer {
 
-    private LinkedList<UserData> users;
+    private final LinkedList<UserData> users;
     public LinkedList<UserData> getUsers() {
         return users;
     }
+    private final LinkedList<RecordData> records;
 
     private int connted_num;
     private LinkedList<Service> connted_player;
@@ -41,7 +44,14 @@ public class GameServer {
     public GameServer(){
         users = new LinkedList<>();
         users.add(new UserData(3, "wwww", "1w", 200));
+
+        records = new LinkedList<>();
+        records.add(new RecordData(12,"22-6-1","WangMuyi",666,"Hard"));
+        records.add(new RecordData(12,"22-5-28","Wang",1000,"Medium"));
+        records.add(new RecordData(12,"22-5-27","WangYifu",233,"Easy"));
+
         users.add(new UserData(3, "yyy", "1f",200));
+
         connted_num = 0;
         connted_player = new LinkedList<>();
         waiting = new LinkedList<>();
@@ -123,6 +133,10 @@ public class GameServer {
                             break;
                         case 9:
                             new Thread(new PlayerMatch(dataPackage, objIn, objOut, waiting, matched, playerNo));
+                            break;
+                        case 13: //返回ranklist列表
+                            waiting.add(socket);
+                            new Thread(new RanklistReturn(dataPackage, objIn, objOut,records));
                             break;
                     }
                 }
